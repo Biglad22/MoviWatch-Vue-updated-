@@ -1,6 +1,6 @@
 <script>
 import {RouterView, RouterLink} from 'vue-router';
-import SideBtn from './components/side-btn.vue';
+import SideBtn from './components/sideBtn.vue';
 import GenreBody from './views/genreBody.vue';
   export default {
     components: {
@@ -21,8 +21,10 @@ import GenreBody from './views/genreBody.vue';
         trenMov:[],
         movieIcons:null,
         searchInput:'',
-        searchFound:false,
         searchResult:[],
+        loaded:true,
+        isVisible:false,
+        isClicked:true
       }
     },
     methods:{
@@ -37,16 +39,25 @@ import GenreBody from './views/genreBody.vue';
 
         try{
 
-          for (let i = 1; i < 10; i++){
-            let data = await fetch(`https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${i}&sort_by=vote_average.desc`, options)
+          for (let i = 1; i < 500; i++){
+            let data = await 
+            fetch(`https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${i}&sort_by=popularity.desc`, options);
             data = await data.json();
+
             this.allMov = this.allMov.concat(data.results); 
           };
 
           console.log(this.allMov)
- 
+          //display home page after load
+          this.loaded = false;
+
 
           for ( let i in this.allMov){
+
+            // this.allMov[i].release_date = this.allMov[i].release_date !== null ? this.allMov[i].release_date.split('-') : 'coming soon';
+            // this.allMov[i].release_date = this.allMov[i].release_date !== 'coming soon' ? `${this.allMov[i].release_date[1]} ${this.allMov[i].release_date[0]} ` : 'coming soon' ;
+
+            this.allMov[i].poster_path = this.allMov[i].poster_path !== null ? `https://image.tmdb.org/t/p/original${this.allMov[i].poster_path}` : null;
 
             this.allMov[i].genre_ids.includes(28) ? this.actMov.push(this.allMov[i]) 
             : this.allMov[i].genre_ids.includes(35) ? this.comMov.push(this.allMov[i])
@@ -60,7 +71,7 @@ import GenreBody from './views/genreBody.vue';
           };
 
           //update trending array
-          this.trenMov=[this.actMov[0] ? this.actMov[0] : null, 
+          this.trenMov= [this.actMov[0] ? this.actMov[0] : null, 
             this.comMov[0] ? this.comMov[0] : null,  
             this.advMov[0] ? this.advMov[0] : null,  
             this.horMov[0] ? this.horMov[0] : null, 
@@ -70,8 +81,6 @@ import GenreBody from './views/genreBody.vue';
             this.scifiMov[0] ? this.scifiMov[0] : null, 
             this.othMov[0] ? this.othMov[0] : null 
           ];
-
-          console.log(this.trenMov);
 
         }
         catch(err){
@@ -88,111 +97,147 @@ import GenreBody from './views/genreBody.vue';
             }
           }
         )
+        arr.inactive = arr.active
       },
 
       search(){
-        const query = this.searchInput.toLowerCase();
+
+        //empty searchresult array
+        this.searchResult = [];
+
+        //find input match
+        let query = this.searchInput.toLowerCase();
         query = query.split(' ');
 
         for(let i in this.allMov){
 
           let mov = this.allMov[i].title.toLowerCase().split(' ');
-          query.every(el => mov.includes(el)) ? (searchResult.push(this.allMov[i]), this.searchFound = true) 
-          : this.searchFound = false
+          query.every(el => mov.includes(el)) ? this.searchResult.push(this.allMov[i]) 
+          : null;
 
-        };
+        }; 
 
+        //chech if search result was found
+        this.$router.push(
+          {
+            name:'searchPage',
+            query:{
+              data:JSON.stringify(this.searchResult)
+            }
+          }
+        );
 
+        //deactivate other tabs
+        this.isClicked = null;
       }
     },
     created(){
       this.movieIcons = [
           {
             type:'action',
-            inactive:'./icons/adventure.png',
-            active:'@/components/icons/spy-active.png',
-            arr: this.actMov
+            arr: this.actMov,
+            cur:(x)=>{
+              return  x ? '../icons/spy.png' : '../icons/spy-active.png';
+            }
           },
           {
             type:'adventure',
-            inactive:"./components/icons/adventure.png",
-            active:'@/components/icons/adventure-active.png',
-            arr: this.advMov
+            arr: this.advMov,
+            cur:(x)=>{
+              return  x ? '../icons/adventure.png' : '../icons/adventure-active.png';
+            }
           },
           {
             type:'animation',
-            inactive:'@/components/icons/horror.png',
-            active:'@/components/icons/horror-active.png',
-            arr: this.animMov
+            arr: this.animMov,
+            cur:(x)=>{
+              return  x ? '../icons/horror.png' : '../icons/horror-active.png';
+            }
           },
           {
             type:'comedy',
-            inactive:'@/components/icons/comedy.png',
-            active:'@/components/icons/comedy-active.png',
-            arr: this.comMov
+            arr: this.comMov,
+            cur:(x)=>{
+              return  x ? '../icons/comedy.png' : '../icons/comedy-active.png';
+            }
           },
           {
             type:'family',
-            inactive:'@/components/icons/horror.png',
-            active:'@/components/icons/horror-active.png',
-            arr: this.famMov
+            arr: this.famMov,
+            cur:(x)=>{
+              return  x ? '../icons/horror.png' : '../icons/horror-active.png';
+            }
           },
           {
             type:'horror',
-            inactive:'@/components/icons/horror.png',
-            active:'@/components/icons/horror-active.png',
-            arr: this.horMov
+            arr: this.horMov,
+            cur:(x)=>{
+              return  x ? '../icons/horror.png' : '../icons/horror-active.png';
+            }
           },
           {
             type:'romance',
-            inactive:'@/components/icons/love.png',
-            active:'@/components/icons/love-active.png',
-            arr: this.lovMov
+            arr: this.lovMov,
+            cur:(x)=>{
+              return x ? '../icons/love.png' : '../icons/love-active.png';
+            }
           },
           {
             type:'Sci-Fi',
-            inactive:'@/components/icons/horror.png',
-            active:'@/components/icons/horror-active.png',
-            arr: this.scifiMov
+            arr: this.scifiMov,
+            cur:(x)=>{
+              return  x ? '../icons/horror.png' : '../icons/horror-active.png';
+            }
           },
           {
             type:'others..',
-            inactive:'@/components/icons/horror.png',
-            active:'@/components/icons/horror-active.png',
-            arr: this.othMov
+            arr: this.othMov,
+            cur:(x)=>{
+              return  x ? '../icons/horror.png' : '../icons/horror-active.png';
+            }
           },
         ]
     },
-    beforeMount(){
+    mounted(){
       this.getAPI()
     }
   }
 </script>
 <template>
-  <div class="container px-7 md:px-0 mx-auto flex flex-col space-y-6 sm:space-y-10 md:space-y-12 xl:space-y-16">
-    <nav class="flex justify-start py-7">
+  <div v-if="loaded" class="container mx-auto w-full h-screen flex justify-center items-center">
+    <img src="../favicon.png" alt="" class="aspect-auto w-1/4 lg:w-1/6 h-fit animate-pulse">
+  </div>
+  <div v-else class="container relative overflow-x-hidden px-7 md:px-0 mx-auto flex flex-col space-y-6 sm:space-y-10 md:space-y-12 xl:space-y-16">
+    <nav class="flex justify-start py-7 sticky top-0 left-0 z-20">
       <a href="#" class="logo p-0">
         <img src="./assets/logo.png" class="nav-logo" alt="">
       </a>
     </nav>
     <div class="main-body sm:flex space-x-0 sm:space-x-10 md:space-x-7 xl:space-x-16">
-      <aside class="side-nav absolute right-full space-y-20 sm:static p-7 flex flex-col bg-green-700">
-        <div class="search-box">
-          <div class="search-wrapper flex space-x-3.5 p-3.5 shadow shadow-red-500">
-            <input type="text" name="search" id="search-input" class=' bg-transparent focus:outline-none' @keydown.enter="search" v-model="searchInput" >
-            <button type="button" id="search-btn " @click="search">search</button>
+      <div class="min-h-fit h-fit max-h-fit -translate-x-full sm:translate-x-0 sticky top-0 z-10 transition-all delay-75" v-bind:class="{'translate-x-0' : isVisible}">
+        <aside class=" side-nav space-y-20 p-7 flex flex-col bg-green-700 ">
+          <div class="search-box">
+            <div class="search-wrapper flex space-x-3.5 p-3.5 shadow shadow-red-500">
+              <input type="text" name="search" id="search-input" class=' bg-transparent focus:outline-none' @keydown.enter="search" v-model="searchInput" >
+              <RouterLink to="/searchPage" id="search-btn " @click="search">search</RouterLink>
+            </div>
           </div>
-        </div>
-        <div class="flex flex-col space-y-3.5">
-          <sidBtn :rout="'/'" @click="genreTab(trenMov)" >
-            <template v-slot:title>something</template>
-          </sidBtn>
-          <SideBtn v-for="i in movieIcons" :icon="i.inactive" @click="genreTab(i.arr)" :rout="'/genrePage'">
-            <template v-slot:title><h6 class="capitalize font-normal group-hover:font-medium group-hover:tracking-widest transition-all ease-in-out delay-75">{{ i.type }}</h6></template>
-          </SideBtn>
-        </div>
-      </aside>
-      <div class='w-full shrink'>
+          <div class="flex flex-col space-y-3.5">
+            <sidBtn :rout="'/'" @click="genreTab(trenMov)" >
+              <template v-slot:title>something</template>
+            </sidBtn>
+            <SideBtn v-for="(i, index) in movieIcons" :icon="isClicked === index ? i.cur(false) : i.cur(true) "  @click="genreTab(i.arr), isClicked= index" :rout="'/genrePage'" class="transition-all delay-75">
+              <template v-slot:title><h6 class="capitalize font-normal group-hover:font-medium group-hover:tracking-widest transition-all ease-in-out delay-75">{{ i.type }}</h6></template>
+            </SideBtn>
+          </div>
+        </aside>
+        <button type="button " @click="isVisible = !isVisible"  class=" py-7 px-3.5 flex items-center absolute top-1/2 left-full z-10 sm:hidden bg-green-700">
+          <span class="material-symbols-outlined transition-all delay-75" v-bind:class="{'rotate-180' : isVisible}">
+            arrow_right
+          </span>
+        </button>
+      </div>
+      <div class='w-full h-fit shrink'>
         <RouterView></RouterView>
       </div>
     </div>

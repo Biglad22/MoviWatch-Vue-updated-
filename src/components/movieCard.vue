@@ -1,9 +1,12 @@
 <template>
     <div class="container flex flex-col">
-        <img src="" alt="" class="card-img w-full h-auto"/>
+        <img :src="src" alt="" class="card-img w-full h-auto"/>
         <div class="details p-3.5">
             <p class="ratings sm:text-base md:text-lg  xl:text-xl ">
                 <slot name="ratings"></slot>
+                <span class=" ms-1.5">
+                    ( <slot name="no-vote"></slot> )
+                </span>
             </p>
             <p class=" font-semibold">
                 <slot name="title" ></slot>
@@ -16,4 +19,10 @@
         </div>
     </div>
 </template>
-
+<script>
+export default {
+    props:[
+        'src'
+    ]
+}
+</script>
