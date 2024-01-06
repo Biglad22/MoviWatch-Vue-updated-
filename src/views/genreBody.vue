@@ -22,7 +22,7 @@
         <div class="others h-fit">
             <p class="text-sm tracking-wider mt-7">others</p>
             <div class="flex flex-wrap gap-7 h-fit max-h-fit">
-                <div v-for="(i, index) in movieList.slice(1)" class=" basis-full sm:basis-2/5 md:basis-2/6 lg:basis-2/12">
+                <div v-for="(i, index) in movieList.slice(1)" class=" basis-2/5 md:basis-2/6 lg:basis-2/12">
                     <div v-if="index < stopPoint">
                         <MovieCard :src="i.poster_path">
                             <template v-slot:title>{{ i.title }}</template>

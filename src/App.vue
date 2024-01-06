@@ -22,13 +22,13 @@ import GenreBody from './views/genreBody.vue';
         movieIcons:null,
         searchInput:'',
         searchResult:[],
-        loaded:true,
+        loading:true,
         isVisible:false,
         isClicked:true
       }
     },
     methods:{
-      async getAPI(){
+      async getAPI(start, end){
         const options = {
           method: 'GET',
           headers: {
@@ -39,17 +39,17 @@ import GenreBody from './views/genreBody.vue';
 
         try{
 
-          for (let i = 1; i < 500; i++){
-            let data = await 
-            fetch(`https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${i}&sort_by=popularity.desc`, options);
-            data = await data.json();
 
+          while(start < end){
+            let data = await  fetch(`https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${start}&sort_by=popularity.desc`, options);
+            start++;
+            data = await data.json();
             this.allMov = this.allMov.concat(data.results); 
-          };
+          }
 
           console.log(this.allMov)
           //display home page after load
-          this.loaded = false;
+          this.loading = false;
 
 
           for ( let i in this.allMov){
@@ -199,27 +199,27 @@ import GenreBody from './views/genreBody.vue';
         ]
     },
     mounted(){
-      this.getAPI()
+      this.getAPI(1,50)
     }
   }
 </script>
 <template>
-  <div v-if="loaded" class="container mx-auto w-full h-screen flex justify-center items-center">
+  <div v-if="loading" class="container mx-auto w-full h-screen flex justify-center items-center">
     <img src="../favicon.png" alt="" class="aspect-auto w-1/4 lg:w-1/6 h-fit animate-pulse">
   </div>
-  <div v-else class="container relative overflow-x-hidden px-7 md:px-0 mx-auto flex flex-col space-y-6 sm:space-y-10 md:space-y-12 xl:space-y-16">
+  <div v-else class="container relative overflow-x-hidden px-7 mx-auto flex flex-col gap-6 sm:gap-10 md:gap-12 xl:gap-16">
     <nav class="flex justify-start py-7 sticky top-0 left-0 z-20">
       <a href="#" class="logo p-0">
         <img src="./assets/logo.png" class="nav-logo" alt="">
       </a>
     </nav>
-    <div class="main-body sm:flex space-x-0 sm:space-x-10 md:space-x-7 xl:space-x-16">
-      <div class="min-h-fit h-fit max-h-fit -translate-x-full sm:translate-x-0 sticky top-0 z-10 transition-all delay-75" v-bind:class="{'translate-x-0' : isVisible}">
-        <aside class=" side-nav space-y-20 p-7 flex flex-col bg-green-700 ">
+    <div class="main-body flex flex-wrap gap-0 md:gap-10 lg:gap-7 xl:gap-16">
+      <div class="min-h-fit flex-shrink-1 h-fit max-h-fit -translate-x-full md:translate-x-0 sticky top-0 z-10 transition-all ease-in-out duration-500 w-fit " :class="isVisible ? 'translate-x-0': null">
+        <aside class="side-nav space-y-20 p-7 flex flex-col bg-green-700 md:opacity-100 transition-all ease-in-out duration-500" :class="isVisible ? 'opacity-100': 'opacity-0'">
           <div class="search-box">
-            <div class="search-wrapper flex space-x-3.5 p-3.5 shadow shadow-red-500">
-              <input type="text" name="search" id="search-input" class=' bg-transparent focus:outline-none' @keydown.enter="search" v-model="searchInput" >
-              <RouterLink to="/searchPage" id="search-btn " @click="search">search</RouterLink>
+            <div class="search-wrapper w-fit flex  gap-3.5 p-3.5 shadow shadow-red-500">
+              <input type="text" name="search" id="search-input" class=' bg-transparent focus:outline-none flex-1 box-border' @keydown.enter="search" v-model="searchInput" >
+              <RouterLink to="/searchPage" id="search-btn" class="w-fit  box-border" @click="search">search</RouterLink>
             </div>
           </div>
           <div class="flex flex-col space-y-3.5">
@@ -227,17 +227,17 @@ import GenreBody from './views/genreBody.vue';
               <template v-slot:title>something</template>
             </sidBtn>
             <SideBtn v-for="(i, index) in movieIcons" :icon="isClicked === index ? i.cur(false) : i.cur(true) "  @click="genreTab(i.arr), isClicked= index" :rout="'/genrePage'" class="transition-all delay-75">
-              <template v-slot:title><h6 class="capitalize font-normal group-hover:font-medium group-hover:tracking-widest transition-all ease-in-out delay-75">{{ i.type }}</h6></template>
+              <template v-slot:title><h6 class="capitalize font-normal group-hover:font-medium group-hover:tracking-widest transition-all ease-in-out duration-500">{{ i.type }}</h6></template>
             </SideBtn>
           </div>
         </aside>
-        <button type="button " @click="isVisible = !isVisible"  class=" py-7 px-3.5 flex items-center absolute top-1/2 left-full z-10 sm:hidden bg-green-700">
-          <span class="material-symbols-outlined transition-all delay-75" v-bind:class="{'rotate-180' : isVisible}">
+        <button type="button " @click="isVisible = !isVisible"  class=" py-7 px-3.5 flex items-center absolute top-1/2 left-full z-10 md:hidden bg-green-700">
+          <span class="material-symbols-outlined transition-all ease-in-out duration-500" v-bind:class="{'rotate-180' : isVisible}">
             arrow_right
           </span>
         </button>
       </div>
-      <div class='w-full h-fit shrink'>
+      <div class='w-full grow-1 h-fit '>
         <RouterView></RouterView>
       </div>
     </div>
@@ -246,6 +246,10 @@ import GenreBody from './views/genreBody.vue';
 <style scoped>
 .nav-logo{
   height:var(--sizer);
+}
+
+::-webkit-scrollbar, ::-webkit-scrollbar-track{
+    display: none !important;
 }
 
 
