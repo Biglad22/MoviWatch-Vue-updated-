@@ -1,6 +1,6 @@
 <template>
     <div class="container max-w-[var(--w)] w-[var(--w)]  flex flex-col relative">
-        <img :src="src" alt="" class="card-img max-w-full h-[var(--h)]"/>
+        <img :src="src" :alt="src" :title="src" class="card-img max-w-full h-[var(--h)]"/>
         <div class="details px-0 py-3.5">
             <p class="ratings sm:text-base md:text-lg  xl:text-xl ">
                 <span class="text-[var(--text-m)]">
