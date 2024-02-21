@@ -22,19 +22,26 @@ import GenreBody from './views/genreBody.vue';
         movieIcons:null,
         searchInput:'',
         searchResult:[],
-        loading:true,
+        loading:false,
         isVisible:false,
-        isClicked:true
+        isClicked:true,
+        isSelected:''
       }
     },
     methods:{
       async getAPI(start, end){
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('Cookie', 'session_id=abc123; tracking_id=xyz456; unnecessary_cookie=1234567890');
+
+        // Modified request headers with trimmed Cookie header
+
+        headers.append('Authorization', 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MTMxN2IwM2I3MmVmMjVkYWQwMjgzNmMyNDQwY2M5MyIsInN1YiI6IjY0NjQ1ZjdkZjQ4YjM0MDBlM2MwM2QyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sqqO92I_wuG0v1h8uh_fGnJtDB9Wx5EgWmMiNbo5PaA')
+        headers.set('Cookie', 'session_id=abc123');
+
         const options = {
           method: 'GET',
-          headers: {
-            accept: 'application/json',
-            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MTMxN2IwM2I3MmVmMjVkYWQwMjgzNmMyNDQwY2M5MyIsInN1YiI6IjY0NjQ1ZjdkZjQ4YjM0MDBlM2MwM2QyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sqqO92I_wuG0v1h8uh_fGnJtDB9Wx5EgWmMiNbo5PaA'
-          }
+          headers: headers
         };
 
         try{
@@ -54,8 +61,8 @@ import GenreBody from './views/genreBody.vue';
 
           for ( let i in this.allMov){
 
-            // this.allMov[i].release_date = this.allMov[i].release_date !== null ? this.allMov[i].release_date.split('-') : 'coming soon';
-            // this.allMov[i].release_date = this.allMov[i].release_date !== 'coming soon' ? `${this.allMov[i].release_date[1]} ${this.allMov[i].release_date[0]} ` : 'coming soon' ;
+            this.allMov[i].release_date = this.allMov[i].release_date !== null && this.allMov[i].hasOwnProperty('release_date') ? this.allMov[i].release_date.split('-') : null;
+            this.allMov[i].release_date = this.allMov[i].release_date !== null ? this.allMov[i].release_date[0] : 'coming soon' ;
 
             this.allMov[i].poster_path = this.allMov[i].poster_path !== null ? `https://image.tmdb.org/t/p/original${this.allMov[i].poster_path}` : null;
 
@@ -196,57 +203,57 @@ import GenreBody from './views/genreBody.vue';
               return  x ? '../icons/horror.png' : '../icons/horror-active.png';
             }
           },
-        ]
+        ];
+        this.getAPI(1,5)
     },
     mounted(){
-      this.getAPI(1,50)
+      this.getAPI(1,5)
     }
+    
   }
 </script>
 <template>
-  <div v-if="loading" class="container mx-auto w-full h-screen flex justify-center items-center">
+  <div v-if="loading" class="container mx-auto w-full h-full flex justify-center items-center">
     <img src="../favicon.png" alt="" class="aspect-auto w-1/4 lg:w-1/6 h-fit animate-pulse">
   </div>
-  <div v-else class="container relative overflow-x-hidden px-7 mx-auto flex flex-col gap-6 sm:gap-10 md:gap-12 xl:gap-16">
+  <div v-else class="container relative w-full h-full overflow-x-hidden px-7 mx-auto flex flex-col gap-6 sm:gap-8 md:gap-10 xl:gap-14">
     <nav class="flex justify-start py-7 sticky top-0 left-0 z-20">
       <a href="#" class="logo p-0">
         <img src="./assets/logo.png" class="nav-logo" alt="">
       </a>
     </nav>
-    <div class="main-body flex flex-wrap gap-0 md:gap-10 lg:gap-7 xl:gap-16">
-      <div class="min-h-fit flex-shrink-1 h-fit max-h-fit -translate-x-full md:translate-x-0 sticky top-0 z-10 transition-all ease-in-out duration-500 w-fit " :class="isVisible ? 'translate-x-0': null">
-        <aside class="side-nav space-y-20 p-7 flex flex-col bg-green-700 md:opacity-100 transition-all ease-in-out duration-500" :class="isVisible ? 'opacity-100': 'opacity-0'">
+    <div class="main-body h-min flex flex-wrap gap-0 md:gap-10 lg:gap-7 xl:gap-16 relative ">
+      <div class="min-h-fit flex-shrink-1 h-fit max-h-fit -translate-x-full md:translate-x-0 fixed md:sticky top-auto z-10 transition-all ease-in-out duration-500 w-fit " :class="isVisible ? 'translate-x-0': null">
+        <aside class="side-nav gap-3.5 flex flex-col  md:opacity-100 transition-all ease-in-out duration-500" :class="isVisible ? 'opacity-100': 'opacity-0'">
           <div class="search-box">
-            <div class="search-wrapper w-fit flex  gap-3.5 p-3.5 shadow shadow-red-500">
-              <input type="text" name="search" id="search-input" class=' bg-transparent focus:outline-none flex-1 box-border' @keydown.enter="search" v-model="searchInput" >
-              <RouterLink to="/searchPage" id="search-btn" class="w-fit  box-border" @click="search">search</RouterLink>
+            <div class="search-wrapper w-fit flex items-center group gap-1.5 p-0">
+              <input type="text" name="search" id="search-input" class=' bg-transparent focus:outline-none flex-1 box-border w-[12.5rem] p-2.5' @keydown.enter="search" v-model="searchInput" >
+              <RouterLink to="/searchPage" id="search-btn" class=" h-auto max-h-fit text-[var(--text-m)] w-fit p-2.5 box-border" :class="searchInput ==='' ? 'text-[var(--text-m)]' : 'text-[var(--primary)]'" @click="search"><span>search</span></RouterLink>
             </div>
+            <hr class="border-[var(--text-l)]"/>
           </div>
-          <div class="flex flex-col space-y-3.5">
+          <div class="flex flex-col gap-3">
             <sidBtn :rout="'/'" @click="genreTab(trenMov)" >
               <template v-slot:title>something</template>
             </sidBtn>
             <SideBtn v-for="(i, index) in movieIcons" :icon="isClicked === index ? i.cur(false) : i.cur(true) "  @click="genreTab(i.arr), isClicked= index" :rout="'/genrePage'" class="transition-all delay-75">
-              <template v-slot:title><h6 class="capitalize font-normal group-hover:font-medium group-hover:tracking-widest transition-all ease-in-out duration-500">{{ i.type }}</h6></template>
+              <template v-slot:title><span class="group-hover:font-[600] group-hover:tracking-widest transition-all ease-in-out duration-500 group-hover:text-[var(--text-h)]" :class="isClicked === index ? ('text-[var(--text-h)]' , 'font-[600]', 'tracking-widest') : null"> {{ i.type }} </span></template>
             </SideBtn>
           </div>
         </aside>
-        <button type="button " @click="isVisible = !isVisible"  class=" py-7 px-3.5 flex items-center absolute top-1/2 left-full z-10 md:hidden bg-green-700">
-          <span class="material-symbols-outlined transition-all ease-in-out duration-500" v-bind:class="{'rotate-180' : isVisible}">
+        <button type="button " @click="isVisible = !isVisible"  class=" py-3.5 px-0.5 flex items-center absolute top-1/2 left-full z-10 md:hidden bg-green-700">
+          <span class="material-symbols-outlined transition-all ease-in-out duration-500 hover:text-[var(--text-h)]" v-bind:class="{'rotate-180' : isVisible}">
             arrow_right
           </span>
         </button>
       </div>
-      <div class='w-full grow-1 h-fit '>
+      <div class='w-full h-full flex-1' :class="isVisible ? 'overflow-hidden' : 'overflow-auto'">
         <RouterView></RouterView>
       </div>
     </div>
   </div>
 </template>
 <style scoped>
-.nav-logo{
-  height:var(--sizer);
-}
 
 ::-webkit-scrollbar, ::-webkit-scrollbar-track{
     display: none !important;

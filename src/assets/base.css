@@ -4,6 +4,17 @@
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;
 
+  --primary:#D90000 !important;
+  --secondary:#ff9494;
+
+  --w-text-h: rgb(255,255,255);
+  --w-text-m: rgba(255,255,255,0.6);
+  --w-text-l: rgba(255,255,255,0.3);
+
+  --b-text-h: rgb(0,0,0);
+  --b-text-m: rgba(0,0,0,0.6);
+  --b-text-l: rgba(0,0,0,0.3);
+
   --vt-c-black: #181818;
   --vt-c-black-soft: #222222;
   --vt-c-black-mute: #282828;
@@ -35,6 +46,14 @@
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
 
+  --text-h:var(--b-text-h);
+  --text-m:var(--b-text-m);
+  --text-l:var(--b-text-l);
+
+  --op-bg-h:var(--w-text-h);
+  --op-bg-m:var(--w-text-m);
+  --op-bg-l:var(--w-text-l);
+
   --section-gap: 160px;
 }
 
@@ -49,6 +68,14 @@
 
     --color-heading: var(--vt-c-text-dark-1);
     --color-text: var(--vt-c-text-dark-2);
+
+    --text-h:var(--w-text-h);
+    --text-m:var(--w-text-m);
+    --text-l:var(--w-text-l);
+
+    --op-bg-h:var(--b-text-h);
+    --op-bg-m:var(--b-text-m);
+    --op-bg-l:var(--b-text-l);
   }
 }
 
@@ -91,31 +118,49 @@ button{
   cursor:pointer;
 }
 
+h1,h2,h3,h4,h5,h6, input, textarea{
+  color:var(--text-h);
+}
+
+p, li{
+  color:var(--text-m) ; 
+}
+
 
 @media only screen and (min-width:1200px){
   h1{
-    font-size: 5.0rem;
+    font-size: 5.0rem !important;
   }
   h2{
-    font-size: 4.6rem;
+    font-size: 4.6rem !important;
   }
   h3{
-    font-size: 4.2rem;
+    font-size: 4.2rem !important;
   }
   h4{
-    font-size: 3.8rem;
+    font-size: 3.8rem !important;
   }
   h5{
-    font-size: 3.4rem;
+    font-size: 3.4rem !important;
   }
   h6{
-    font-size: 3.0rem;
+    font-size: 3.0rem !important;
   }
-  p, RouterLink, a, li, input, textarea, button {
-    font-size: 2.2rem;
+  p, RouterLink, a, li, textarea, button {
+    font-size: 2.2rem !important;
+  }
+  span, input{
+    font-size: 1.8rem !important;
+    line-height: calc( 1.8rem + 0.2rem);
+  }
+
+  .nav-logo{
+    max-height: 3.0rem !important;
   }
   :root{
     --gap:2.2rem;
+    --text-wrap: calc( 2 * ( 2.2rem + 0.8rem));
+    --side-icon:calc( 1.8rem + 0.4rem);
     --m-padding:3.0rem;
     --margin:10rem;
     --sizer:4.2rem;
@@ -124,28 +169,37 @@ button{
 
 @media only screen and (min-width:992px) and (max-width:1199px){
   h1{
-    font-size: 4.8rem;
+    font-size: 4.8rem !important;
   }
   h2{
-    font-size: 4.4rem;
+    font-size: 4.4rem !important;
   }
   h3{
-    font-size: 4.0rem;
+    font-size: 4.0rem !important;
   }
   h4{
-    font-size: 3.6rem;
+    font-size: 3.6rem !important;
   }
   h5{
-    font-size: 3.2rem;
+    font-size: 3.2rem !important;
   }
   h6{
-    font-size: 2.8rem;
+    font-size: 2.8rem !important;
   }
-  p, RouterLink, a, li, input, textarea, button{
-    font-size: 2.0rem;
+  p, RouterLink, a, li, textarea, button{
+    font-size: 2.0rem !important;
+  }
+  span, input{
+    font-size: 1.6rem !important;
+    line-height:  calc( 1.6rem + 0.2rem);
+  }
+  .nav-logo{
+    max-height: 2.8rem !important;
   }
   :root{
     --gap:2.0rem;
+    --text-wrap: calc( 2 * ( 2.0rem + 0.8rem));
+    --side-icon:calc( 1.6rem + 0.4rem);
     --m-padding:2.8rem;
     --margin:6.4rem;
     --sizer:4.0rem;
@@ -154,28 +208,37 @@ button{
 
 @media only screen and (min-width:768px) and (max-width:991px){
   h1{
-    font-size: 4.6rem;
+    font-size: 4.6rem !important;
   }
   h2{
-    font-size: 4.2rem;
+    font-size: 4.2rem !important;
   }
   h3{
-    font-size: 3.8rem;
+    font-size: 3.8rem !important;
   }
   h4{
-    font-size: 3.4rem;
+    font-size: 3.4rem !important;
   }
   h5{
-    font-size: 3.0rem;
+    font-size: 3.0rem !important;
   }
   h6{
-    font-size: 2.6rem;
+    font-size: 2.6rem !important;
   }
-  p, RouterLink, a, li, input, textarea, button{
-    font-size: 1.8rem;
+  p, RouterLink, a, li, textarea, button{
+    font-size: 1.8rem !important;
+  }
+  span, input{
+    font-size: 1.4rem !important;
+    line-height: calc( 1.4rem + 0.2rem);
+  }
+  .nav-logo{
+    max-height: 2.6rem !important;
   }
   :root{
     --gap:1.8rem;
+    --text-wrap: calc( 2 * ( 1.8rem + 0.8rem));
+    --side-icon:calc( 1.4rem + 0.4rem);
     --m-padding:2.6rem;
     --margin:4.2rem;
     --sizer:3.8rem;
@@ -184,28 +247,37 @@ button{
 
 @media only screen and (min-width:576px) and (max-width:767px){
   h1{
-    font-size: 4.4rem;
+    font-size: 4.4rem !important;
   }
   h2{
-    font-size: 4.0rem;
+    font-size: 4.0rem !important;
   }
   h3{
-    font-size: 3.6rem;
+    font-size: 3.6rem !important;
   }
   h4{
-    font-size: 3.2rem;
+    font-size: 3.2rem !important;
   }
   h5{
-    font-size: 2.8rem;
+    font-size: 2.8rem !important;
   }
   h6{
-    font-size: 2.4rem;
+    font-size: 2.4rem !important;
   }
-  p, RouterLink, a, li, input, textarea, button{
-    font-size: 1.6rem;
+  p, RouterLink, a, li, textarea, button{
+    font-size: 1.6rem !important;
+  }
+  span, input{
+    font-size: 1.2rem !important;
+    line-height: calc( 1.2rem + 0.2rem);
+  }
+  .nav-logo{
+    max-height: 2.4rem !important;
   }
   :root{
     --gap:1.6rem;
+    --text-wrap: calc( 2 * ( 1.6rem + 0.8rem));
+    --side-icon:calc( 1.2rem + 0.4rem);
     --m-padding:2.4rem;
     --margin:2.4rem;
     --sizer:3.6rem;
@@ -214,32 +286,46 @@ button{
 
 @media only screen and (max-width:575px){
   h1{
-    font-size: 4.2rem;
+    font-size: 4.2rem !important;
   }
   h2{
-    font-size: 3.8rem;
+    font-size: 3.8rem !important;
   }
   h3{
-    font-size: 3.4rem;
+    font-size: 3.4rem !important;
   }
   h4{
-    font-size: 3.0rem;
+    font-size: 3.0rem !important;
   }
   h5{
-    font-size: 2.6rem;
+    font-size: 2.6rem !important;
   }
   h6{
-    font-size: 2.2rem;
+    font-size: 2.2rem !important;
   }
-  p, RouterLink, a, li, input, textarea, button{
-    font-size: 1.4rem;
+  p, RouterLink, a, li, textarea, button{
+    font-size: 1.4rem !important;
+  }
+  span, input{
+    font-size: 1.0rem !important;
+    line-height: calc( 1.0rem + 0.2rem);
+  }
+  .nav-logo{
+    max-height: 2.2rem !important;
   }
   :root{
     --gap:1.4rem;
+    --text-wrap: calc( 2 * ( 1.4rem + 0.8rem));
+    --side-icon:calc( 1.0rem + 0.4rem);
     --m-padding:2.2rem;
     --margin:1.6rem;
     --sizer:3.4rem;
   }
+}
+
+a, button{
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
 }
 
 ::-webkit-scrollbar, ::-webkit-scrollbar-track{
