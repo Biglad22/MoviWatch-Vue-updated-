@@ -214,7 +214,7 @@ import GenreBody from './views/genreBody.vue';
 </script>
 <template>
   <div v-if="loading" class="container mx-auto w-full h-full flex justify-center items-center">
-    <img src="../favicon.png" alt="" class="aspect-auto w-1/4 lg:w-1/6 h-fit animate-pulse">
+    <img src="../public/favicon.png" alt="" class="aspect-auto w-1/4 lg:w-1/6 h-fit animate-pulse">
   </div>
   <div v-else class="container relative w-full h-full overflow-x-hidden px-7 mx-auto flex flex-col gap-6 sm:gap-8 md:gap-10 xl:gap-14">
     <nav class="flex justify-start py-7 sticky top-0 left-0 z-20">
