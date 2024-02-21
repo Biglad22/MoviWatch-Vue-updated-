@@ -1,11 +1,11 @@
 <template>
-    <div class="container">
+    <div class="container flex flex-col flex-wrap gap-14">
         <div class="topMovie flex flex-wrap pe-7 gap-7">
             <div class="basis-1/2 sm:basis-1/3 md:basis-1/4 xl:basis-1/6">
-                <img :src="movieList[0].poster_path !== null ? movieList[0].poster_path : null" alt="" class="w-full h-auto">
+                <img :src="movieList[0].poster_path !== null && movieList[0].hasOwnProperty('poster_path') ? movieList[0].poster_path : null" alt="" class="w-full h-auto">
             </div>
             <div class="det shrink ">
-                <p class="text-xs mb-7">
+                <p class="text-[calc( var(--gap) - 0.2rem)] mb-7">
                     {{ movieList[0].vote_average }}
                     <span class="ms-1.5">
                         ( {{ movieList[0].vote_count }} )
@@ -20,26 +20,27 @@
         </div>
         <hr />
         <div class="others h-fit">
-            <p class="text-sm tracking-wider mt-7">others</p>
+            <h6 class=" mt-7 px-3.5 border-l-4 border-l-[var(--secondary)] capitalize mb-14">others</h6>
             <div class="flex flex-wrap gap-7 h-fit max-h-fit">
-                <div v-for="(i, index) in movieList.slice(1)" class=" basis-2/5 md:basis-2/6 lg:basis-2/12">
-                    <div v-if="index < stopPoint">
-                        <MovieCard :src="i.poster_path">
+                <div v-for="(i, index) in movieList.slice(1)" :index="index" class=" basis-2/5 md:basis-2/6 lg:basis-2/12" :class="index < stopPoint ? 'block' : 'hidden' ">
+                    <Transition name="movCard">
+                        <MovieCard :src="i.poster_path !== null && i.hasOwnProperty('poster_path') ? i.poster_path : null"  v-show="index < stopPoint">
                             <template v-slot:title>{{ i.title }}</template>
                             <template v-slot:release-date>{{  i.release_date !== null ? i.release_date : 'coming soon' }}</template>
                             <template v-slot:ratings>{{ i.vote_average }}</template>
                             <template v-slot:no-vote>{{ i.vote_count }}</template>
                         </MovieCard>
-                    </div>
+                    </Transition>
                 </div>
             </div>
         </div>
-        <button class='bg-none p-3.5 border-none' @click="seemoreBtn">{{ seeBtn }}</button>
+        <button class='bg-none ps-0 p-3.5 border-none w-fit' @click="seemoreBtn">{{ seeBtn }}</button>
     </div>
 </template>
 <script>
 
 import MovieCard from '../components/movieCard.vue';
+import { Transition } from 'vue';
 
 export default {
     components:{
@@ -81,3 +82,12 @@ export default {
     }
 }
 </script>
+<style scoped>
+.movCard-enter-active, .movCard-leave-active{
+    transition: all 0.5ms;
+    opacity:1;
+}
+.movCard-enter-from, .movCard-leave-to{
+    opacity:0;
+}
+</style>
