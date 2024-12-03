@@ -1,0 +1,35 @@
+/* Set base font-size for the body */
+html{
+    font-size: 10px !important; /* Default base size */
+    line-height: 1.6; /* Ensure good readability */
+}
+
+/* Responsive headings using clamp() */
+h1, h2, h3, h4, h5, h6, p, span, li, input, a, small {
+    line-height: 1.2; /* Tighter line spacing for headings */
+}
+
+h1 {
+    font-size: clamp(3rem, 4.25vw, 2.75rem) !important; /* Min: 2rem, Pref: 5% of viewport width, Max: 3rem */
+}
+h2 {
+    font-size: clamp(2.75rem, 4vw, 2.5rem) !important;
+}
+h3 {
+    font-size: clamp(2.5rem, 3.75vw, 2.25rem) !important;
+}
+h4 {
+    font-size: clamp(2.25rem, 3.25vw, 2rem) !important;
+}
+h5 {
+    font-size: clamp(2rem, 2.75vw, 1.75rem) !important;
+}
+h6 {
+    font-size: clamp(1.875rem, 2.25vw, 1.5rem) !important;
+}
+p, a, input, li{
+    font-size: clamp(1.75rem, 1.75vw, 1.25rem) !important;
+}
+small {
+    font-size: clamp(1.625rem, 1.25vw, 1rem) !important; /* Smaller text with reasonable scaling */
+}

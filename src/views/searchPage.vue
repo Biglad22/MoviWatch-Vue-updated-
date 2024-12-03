@@ -1,7 +1,7 @@
 <template>
     <div class="container flex flex-col flex-wrap gap-6 sm:gap-10 md:gap-12 xl:gap-16">
         <div class="flex flex-wrap items-center justify-between">
-            <h6 class="px-3.5 py-0 border-l-4 border-l-[var(--secondary)]">Search</h6>
+            <h6 class="px-3.5 py-0 border-l-4 border-l-secondary">Search</h6>
             <div class="filter w-fit h-fit relative">
                 <button type="button" class="py-2 px-7 border-2 box-border hover:border-[var(--text-l)]" @click="openFilter" :class="isVisible ===false ? 'border-transparent' : null ">
                     filter
@@ -13,7 +13,7 @@
                                 genre
                                 <select name="genre" id="genre-filter" class=" bg-transparent border-2 focus:outline-none p-3.5 box-border h-fit flex flex-wrap items-center" v-model="filterGenre">
                                     <option value="0" selected class="text-[var(--text-h)] bg-[var(--op-bg-m)">- default -</option>
-                                    <option v-for="(i, index) in movieGenre" :value="i.id" class="text-[var(--text-h)] bg-[var(--op-bg-m)]">{{ i.name }}</option>
+                                    <option v-for="i in movieGenre" :value="i.id" class="text-[var(--text-h)] bg-[var(--op-bg-m)]" :key="i.name" >{{ i.name }}</option>
                                 </select>
                             </label>
                             <label for="realse-date" class="flex flex-wrap flex-col gap-3.5 w-full">
@@ -23,7 +23,7 @@
                             <label for="ratings" class="flex flex-wrap flex-col w-full">
                                 minimum rating
                                 <div class="flex flex-wrap gap-2 items-center w-full">
-                                    <input type="range" name="ratings" min="0" :max="mostPor" step="1" id="ratings" class=" h-[1.6rem] flex-1 " v-model="filterRating">
+                                    <input type="range" name="ratings" min="0" :max="mostPor" step="1" id="ratings" class=" h-[1.6rem] flex-1 bg-primary " v-model="filterRating">
                                     <p class="py-3.5 w-[var(--text-wrap)]">{{ filterRating }}</p>
                                 </div>
                             </label>
@@ -37,12 +37,7 @@
             </div>
         </div>
         <div class="flex flex-wrap gap-7" v-if="movieList.length > 0 || filterList.length > 0 ">
-            <MovieCard v-for="mov in filtered ? filterList  : movieList" :src="mov.poster_path" >
-                <template v-slot:title>{{ mov.title }}</template>
-                <template v-slot:release-date>{{  mov.release_date !== null ? mov.release_date.split('-')[0] : 'coming soon' }}</template>
-                <template v-slot:no-vote>{{ mov.vote_count }}</template>
-                <template v-slot:ratings>{{ mov.vote_average }}</template>
-            </MovieCard>
+            <MovieCard v-for="mov in filtered ? filterList  : movieList" :movie="mov" />
         </div>
         <h5 class="text-center text-[var(--text-l)] mt-[15%] capitalize" v-else>No result</h5>
     </div>
@@ -184,7 +179,6 @@
     appearance: none;
     width:1.6rem;
     height: 1.6rem;
-    background:var(--primary);
     cursor: pointer;
  }
 
@@ -192,7 +186,6 @@
  input[type='range']::-moz-range-thumb{
     width:1.6rem;
     height: 1.6rem;
-    background:var(--primary);
     cursor: pointer;
  }
 </style>

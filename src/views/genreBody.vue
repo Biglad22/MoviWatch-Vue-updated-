@@ -1,90 +1,91 @@
 <template>
-    <div class="container flex flex-col flex-wrap gap-14">
-        <div class="topMovie flex flex-wrap pe-7 gap-7">
-            <div class="basis-1/2 sm:basis-1/3 md:basis-1/4 xl:basis-1/6">
-                <img :src="movieList[0].poster_path !== null && movieList[0].hasOwnProperty('poster_path') ? movieList[0].poster_path : null" alt="" class="w-full h-auto">
-            </div>
-            <div class="det shrink ">
-                <p class="text-[calc( var(--gap) - 0.2rem)] mb-7">
-                    {{ movieList[0].vote_average }}
-                    <span class="ms-1.5">
-                        ( {{ movieList[0].vote_count }} )
-                    </span>
-                </p>
-                <h6 class="title capitalize text-wrap text-ellipsis mb-3.5 font-medium">{{ movieList[0].title }}</h6>
-                <p class="year-rel text-sm italic mb-7 font-light">
-                    {{ movieList[0].release_date ? movieList[0].release_date : 'coming soon' }}
-                </p>
-                <p class="desc text-wrap text-ellipsis mb-7">{{ movieList[0].overview }}</p>
-            </div>
-        </div>
-        <hr />
+    <!-- loading wall -->
+    <LoadingWall 
+        v-if="loadingState.loading || available.length < 1"   
+        :loading-err="loadingState.err"
+    />
+
+    <!-- main content -->
+    <div v-else class="container flex flex-col flex-wrap gap-14">
+        <HeadlineMovie />
         <div class="others h-fit">
-            <h6 class=" mt-7 px-3.5 border-l-4 border-l-[var(--secondary)] capitalize mb-14">others</h6>
-            <div class="flex flex-wrap gap-7 h-fit max-h-fit">
-                <div v-for="(i, index) in movieList.slice(1)" :index="index" class=" basis-2/5 md:basis-2/6 lg:basis-2/12" :class="index < stopPoint ? 'block' : 'hidden' ">
+            <SectionTitle title="others" />
+            <div class="flex flex-wrap gap-7 h-fit max-h-fit justify-between">
+                <div v-for="(mov, index) in available" :key="index" >
                     <Transition name="movCard">
-                        <MovieCard :src="i.poster_path !== null && i.hasOwnProperty('poster_path') ? i.poster_path : null"  v-show="index < stopPoint">
-                            <template v-slot:title>{{ i.title }}</template>
-                            <template v-slot:release-date>{{  i.release_date !== null ? i.release_date : 'coming soon' }}</template>
-                            <template v-slot:ratings>{{ i.vote_average }}</template>
-                            <template v-slot:no-vote>{{ i.vote_count }}</template>
-                        </MovieCard>
+                        <MovieCard  :movie="mov" class=" basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5" />
                     </Transition>
                 </div>
             </div>
         </div>
-        <button class='bg-none ps-0 p-3.5 border-none w-fit' @click="seemoreBtn">{{ seeBtn }}</button>
+        <button class='bg-none ps-0 p-3.5 border-none w-fit' @click="seeMore">see More</button>
     </div>
 </template>
-<script>
+<script setup>
+    import LoadingWall from '@/components/loading.vue';
+    import MovieCard from '@/components/movieCard.vue';
+    import SectionTitle from '@/components/sectionTitle.vue';
+    import { useGenre } from '@/stores/movieByGenre';
+    import { computed, onMounted, ref, watch } from 'vue';
+    import { movieGenreCode } from '@/util/navigationHelper';
+    import HeadlineMovie from '@/components/headlineMovie.vue';
+    import { useRoute } from 'vue-router';
 
-import MovieCard from '../components/movieCard.vue';
-import { Transition } from 'vue';
 
-export default {
-    components:{
-        MovieCard
-    },
-    data(){
-        return{
-            stopPoint:null,
-            rem:null,
-            seeBtn:'see more'
-        }
-    },
-    computed:{
-        movieList(){
-           return this.$route.query.data ? JSON.parse(this.$route.query.data)
-            : null;
-        }
-    },
-    mounted(){
-        this.stopPoint = this.movieList.length > 8 ? 8 : this.movieList.length;
-        this.rem = this.movieList.length - this.stopPoint;
-    },
-    methods:{
-        seemoreBtn(){
-            let frac = this.rem / 2;
+    /// variable used to determine wether loading wall should be removed or there has been an error
+    const loadingState = ref({
+        loading : true,
+        err: false
+    })
 
-            if(this.seeBtn === 'see more'){
+    //access genre store 
+    const currentGenre = useGenre();
 
-                this.stopPoint = frac >= 2 ? this.stopPoint + 4 
-                : this.stopPoint + this.rem;
+    /// remember that an api call was made at the click of genre router link button
+    /// available is an array of movies with a release data 
+    const available = computed(()=> currentGenre.available);
 
-                this.seeBtn = this.rem >= 1 ?  'see more' : 'see less';
+    ///access route 
+    const route = useRoute()
 
-            }else{
-                this.stopPoint = this.movieList.length > 8 ? 8 : this.movieList.length;
-                this.seeBtn = 'see more';
-            }
-        }
+
+
+    ///handles actual information fetch
+    const fetchGenreData = (genre) => {
+        
+        try{    
+            const genreId = movieGenreCode[genre.toLowerCase()];  // finds genre code from the object of genre codes in movieGenreCode
+            currentGenre.changeGenre(genreId);  // api call for regular movie genre
+
+            loadingState.value = { // if call is successful LoadingWall is removed with error message if rendered
+                loading : false,
+                err: false
+            };
+        }catch (error) {
+
+            loadingState.value = { // if call is unsuccessful LoadingWall remains with an error message
+                loading : true,
+                err: true
+            };
+            console.log(error);
+        };
     }
-}
+    onMounted(()=>{
+        const initialGenre = route.params.genre;
+        fetchGenreData(initialGenre)
+    })
+    
+    // Watch for route changes
+    watch(() => route.params.genre, (newGenre) => {
+        if (newGenre) fetchGenreData(newGenre);
+    });
+    
+    const seeMore = () => currentGenre.changePage();
+
 </script>
 <style scoped>
 .movCard-enter-active, .movCard-leave-active{
-    transition: all 0.5ms;
+    transition: all 500ms;
     opacity:1;
 }
 .movCard-enter-from, .movCard-leave-to{

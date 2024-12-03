@@ -1,32 +1,65 @@
 <template>
-    <div class="container max-w-[var(--w)] w-[var(--w)]  flex flex-col relative">
-        <img :src="src" :alt="src" :title="src" class="card-img max-w-full h-[var(--h)]"/>
+    <RouterLink :to="singleMoviePath" @click="setSingleMovie"  class="container max-w-[var(--w)] min-w-[var(--w)] flex flex-col relative">
+        <img 
+            :src="movie.poster_path" 
+            :alt="`${movie.title} poster`" 
+            :title="`${movie.title} poster`" 
+            class="card-img max-w-full h-[var(--h)]"
+        />
+
         <div class="details px-0 py-3.5">
-            <p class="ratings sm:text-base md:text-lg  xl:text-xl ">
+            <small class="ratings sm:text-base md:text-lg  xl:text-xl ">
                 <span class="text-[var(--text-m)]">
-                    <slot name="ratings"></slot>
+                    {{ movie.vote_average }}
                 </span>
                 <span class=" ms-1.5 text-[var(--text-l)]">
-                    ( <slot name="no-vote"></slot> )
+                    ( {{ movie.vote_count }} )
                 </span>
+            </small>
+            <p class="font-semibold text-[var(--text-h)]  whitespace-nowrap overflow-hidden text-nowrap text-ellipsis h-[var(--text-wrap)] max-h-[var(--text-wrap)]">
+                {{ movie.title }}
             </p>
-            <p class="font-semibold text-[var(--text-h)]  whitespace-nowrap overflow-hidden text-nowrap text-ellipsis h-[var(--text-wrap)] max-h-[var(--text-wrap)] hover:h-auto hover:p-2.5 hover:scale-110">
-                <slot name="title" ></slot>
-            </p>
-            <p  class="capitalize">release date:
+            <small  class="capitalize">release date:
                 <span class="text-[var(--text-m)]">
-                    <slot name="release-date"></slot>
+                    {{ movie.release_date }}
                 </span>
-            </p>
+            </small>
         </div>
-    </div>
+    </RouterLink>
 </template>
-<script>
-export default {
-    props:[
-        'src'
-    ]
-}
+<script setup>
+    import { defineProps, onMounted, ref } from 'vue';
+    import { useRouter } from 'vue-router';
+    import { useSingleMovie } from '@/stores/singleMovie';
+
+    /// takes movie object that contains all it's information
+    const {movie} = defineProps({
+        movie: {
+            type : Object,
+            required: true
+        }
+    });
+    // defines the path to movie's singleMoviePage
+    const singleMoviePath = ref('/');
+
+    ///access single movie store
+    const singleMovieStore = useSingleMovie();
+    ///sets information of movie in single move page store on click
+    const setSingleMovie = () => singleMovieStore.setMovie(movie); 
+
+    onMounted(() => {
+        ///access route params
+        const {params} = useRouter().currentRoute.value;    
+
+        /// sets the singleMove page route accordingly
+        const formattedTitle = movie.title.split(' ').join('-');
+        singleMoviePath.value = 'genre' in params
+            ? `/${params.genre}/${formattedTitle}`
+            : `/trending/${formattedTitle}`;
+    });
+
+
+    
 </script>
 <style>
 :root{
